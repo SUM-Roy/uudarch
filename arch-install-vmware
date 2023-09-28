@@ -1,0 +1,92 @@
+#!/bin/bash
+#verion 1.0 archlinux-install-script
+
+
+
+
+#使用fdisk -l分区
+
+fdisk -l | grep  GiB
+
+read -p  "select disk device :" slectdev
+
+if [  $slectdev  ]
+then
+        fdisk ${slectdev} <<EOF
+        n
+        p
+
+
+
+        +300M
+        n
+        p
+
+
+
+        +8G
+        n
+        p
+
+        
+        +50G
+        wq
+EOF
+
+else
+
+      echo "分区失败！"
+fi
+if [ $? === 0   ]
+then
+
+        echo =================== 分区完成 =====================
+
+else
+
+        echo =================== 分区失败 =====================
+fi
+
+
+
+mkfs.fat -F 32 /dev/sda1 && mkswap /dev/sda2 && mkfs.ext4 /dev/sda3 && swapon /dev/sda2
+
+mkdir -p /mnt/boot && mount /dev/sda1 /mnt/boot && mount /dev/sda3 /mnt && 
+
+echo ===================== 测试镜像源 ==============================================
+
+reflector --country China, Germany --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+
+
+echo ================================= 测试镜像源结束 ========================
+
+
+pacstrap -K /mnt base linux linux-firmware intel-ucode git xfce4 Xrog vim nano sudo xfce4 lightdm yay 
+
+
+
+
+
+genfstab -U /mnt >> /mnt/etc/fstab && arch-chroot /mnt && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && hwclock --systohc && locale-gen
+
+if [ #? == 0 ]
+then
+        echo LANG=en_US.UTF-8 >> /etc/locale.conf
+
+        echo siomc-pc >> /etc/hostname
+else
+        echo =============== 环境语言设置失败 =======================
+
+fi
+
+
+echo ====================== 接下请设置root 密码 =======================================
+
+
+
+echo "请创建新用户：" 
+useradd -m -G "root" -s "bash" "siomc"
+passwd siomc <<TOR
+aass
+aass
+TOR
