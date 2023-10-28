@@ -15,29 +15,27 @@ then
         fdisk ${slectdev} <<EOF
         n
         p
-
-
+        1
 
         +300M
         n
         p
-
-
+        2
 
         +8G
         n
         p
-
+        3
         
-        +50G
-        wq
+	wq
+
 EOF
 
 else
 
       echo "分区失败！"
 fi
-if [ $? === 0   ]
+if [ $? = 0  ]
 then
 
         echo =================== 分区完成 =====================
@@ -51,7 +49,7 @@ fi
 
 mkfs.fat -F 32 /dev/sda1 && mkswap /dev/sda2 && mkfs.ext4 /dev/sda3 && swapon /dev/sda2
 
-mkdir -p /mnt/boot && mount /dev/sda1 /mnt/boot && mount /dev/sda3 /mnt && 
+mkdir -p /mnt/boot && mount /dev/sda1 /mnt/boot && mount /dev/sda3 /mnt 
 
 echo ===================== 测试镜像源 ==============================================
 
@@ -61,7 +59,7 @@ reflector --country China, Germany --age 12 --protocol https --sort rate --save 
 echo ================================= 测试镜像源结束 ========================
 
 
-pacstrap -K /mnt base linux linux-firmware intel-ucode git xfce4 Xrog vim nano sudo xfce4 lightdm yay 
+pacstrap -K /mnt base linux linux-firmware intel-ucode git vim sudo yay 
 
 
 
@@ -69,7 +67,7 @@ pacstrap -K /mnt base linux linux-firmware intel-ucode git xfce4 Xrog vim nano s
 
 genfstab -U /mnt >> /mnt/etc/fstab && arch-chroot /mnt && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && hwclock --systohc && locale-gen
 
-if [ #? == 0 ]
+if [ #? = 0 ]
 then
         echo LANG=en_US.UTF-8 >> /etc/locale.conf
 
