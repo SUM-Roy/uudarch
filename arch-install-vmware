@@ -80,11 +80,3 @@ fi
 
 echo ====================== 接下请设置root 密码 =======================================
 
-
-
-echo "请创建新用户：" 
-useradd -m -G "root" -s "bash" "siomc"
-passwd siomc <<TOR
-aass
-aass
-TOR
